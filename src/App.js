@@ -2,13 +2,17 @@ import { useState } from "react";
 import { nanoid } from "nanoid";
 
 function App() {
+  const [selectedOption, setSelectedOption] = useState("");
   const [darkMode, setDarkMode] = useState(false);
-  const [likeBtn, setLikeBtn] = useState(0);
   const [inputValue, setInputValue] = useState("");
   const [todoList, setTodoList] = useState([
-    { id: nanoid(), contents: "리액트 공부하기" },
-    { id: nanoid(), contents: "아침 운동하기" },
+    { id: nanoid(), contents: "리액트 공부하기", likes: 0 },
+    { id: nanoid(), contents: "아침 운동하기", likes: 0 },
   ]);
+
+  const handleOptionChange = (e) => {
+    setSelectedOption(e.target.value);
+  };
 
   return (
     <>
@@ -16,12 +20,13 @@ function App() {
         {darkMode ? <div style={{ backgroundColor: "black", color: "white" }}>다크모드!</div> : <div>화이트모드!</div>}
         <input type="checkbox" onChange={() => setDarkMode(!darkMode)} />
       </div>
-      <select>
+      <select value={selectedOption} onChange={handleOptionChange}>
         <option>선택하세요</option>
         <option>검은색바지</option>
         <option>파란색바지</option>
         <option>빨간색바지</option>
       </select>
+      <div>{selectedOption}</div>
       <br />
       <input
         value={inputValue}
@@ -34,7 +39,7 @@ function App() {
           if (inputValue === "") {
             alert("내용을 입력해주세요.");
           } else {
-            const copy = [...todoList, { id: nanoid, contents: inputValue }];
+            const copy = [...todoList, { id: nanoid(), contents: inputValue, likes: 0 }];
             setTodoList(copy);
             setInputValue("");
           }
@@ -56,13 +61,18 @@ function App() {
             >
               삭제
             </button>
-            <span> {likeBtn}</span>
             <button
               onClick={() => {
-                setLikeBtn(likeBtn + 1);
+                const updatedTodoList = todoList.map((item, index) => {
+                  if (index === todoIndex) {
+                    return { ...item, likes: item.likes + 1 };
+                  }
+                  return item;
+                });
+                setTodoList(updatedTodoList);
               }}
             >
-              좋아요
+              좋아요 {todo.likes}
             </button>
           </div>
         );
