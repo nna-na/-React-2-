@@ -1,83 +1,59 @@
+import { Route, Routes } from "react-router";
+import Main from "./pages/Main";
+import Products from "./pages/Products";
+import Product from "./pages/Product";
+import Layout from "./common/Layout";
+import { Link } from "react-router-dom";
+import SignIn from "./pages/SignIn";
+import SignUp from "./pages/SignUp";
 import { useState } from "react";
-import { nanoid } from "nanoid";
 
 function App() {
-  const [selectedOption, setSelectedOption] = useState("");
-  const [darkMode, setDarkMode] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [todoList, setTodoList] = useState([
-    { id: nanoid(), contents: "리액트 공부하기", likes: 0 },
-    { id: nanoid(), contents: "아침 운동하기", likes: 0 },
+  // 상태 변수를 생성하고, 초기값으로 배열 형태의 상품 데이터를 설정
+  const [products, setProducts] = useState([
+    {
+      id: 1,
+      name: "멋진 바지",
+      price: 20000,
+      option: [28, 30, 32],
+      likes: 100,
+    },
+    {
+      id: 2,
+      name: "멋진 셔츠",
+      price: 10000,
+      option: ["small", "medium", "large"],
+      likes: 200,
+    },
+    {
+      id: 3,
+      name: "멋진 신발",
+      price: 30000,
+      option: [230, 240, 250, 260, 270],
+      likes: 300,
+    },
   ]);
-
-  const handleOptionChange = (e) => {
-    setSelectedOption(e.target.value);
-  };
-
   return (
-    <>
-      <div>
-        {darkMode ? <div style={{ backgroundColor: "black", color: "white" }}>다크모드!</div> : <div>화이트모드!</div>}
-        <input type="checkbox" onChange={() => setDarkMode(!darkMode)} />
-      </div>
-      <select value={selectedOption} onChange={handleOptionChange}>
-        <option>선택하세요</option>
-        <option>검은색바지</option>
-        <option>파란색바지</option>
-        <option>빨간색바지</option>
-      </select>
-      <div>{selectedOption}</div>
-      <br />
-      <input
-        value={inputValue}
-        onChange={(e) => {
-          setInputValue(e.target.value);
-        }}
-      />
-      <button
-        onClick={() => {
-          if (inputValue === "") {
-            alert("내용을 입력해주세요.");
-          } else {
-            const copy = [...todoList, { id: nanoid(), contents: inputValue, likes: 0 }];
-            setTodoList(copy);
-            setInputValue("");
+    // React Router의 Routes 및 Route 컴포넌트를 사용한 라우터 구성
+    // Main, Products, Product 컴포넌트에 products 상태를 전달
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<Main products={products} />} />
+        <Route path="/products" element={<Products products={products} />} />
+        <Route path="/products/:id" element={<Product products={products} />} />
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route
+          path="*"
+          element={
+            <>
+              <div>없는 페이지입니다.</div>
+              <Link to="/">홈으로 이동</Link>
+            </>
           }
-        }}
-      >
-        입력
-      </button>
-      {todoList.map((todo, todoIndex) => {
-        return (
-          <div key={todo.id}>
-            <span>{todo.contents}</span>
-            <button
-              onClick={() => {
-                const newArray = todoList.filter((_, index) => {
-                  return index !== todoIndex;
-                });
-                setTodoList(newArray);
-              }}
-            >
-              삭제
-            </button>
-            <button
-              onClick={() => {
-                const updatedTodoList = todoList.map((item, index) => {
-                  if (index === todoIndex) {
-                    return { ...item, likes: item.likes + 1 };
-                  }
-                  return item;
-                });
-                setTodoList(updatedTodoList);
-              }}
-            >
-              좋아요 {todo.likes}
-            </button>
-          </div>
-        );
-      })}
-    </>
+        />{" "}
+      </Route>
+    </Routes>
   );
 }
 
